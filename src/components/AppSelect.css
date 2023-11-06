@@ -1,0 +1,37 @@
+.p-dropdown, .p-multiselect {
+    @apply border border-slate-300;
+}
+
+.p-dropdown,
+.p-multiselect, .p-inputtext {
+    @apply text-xs text-slate-600
+}
+
+.p-dropdown-item, .p-multiselect-item {
+    @apply text-slate-600;
+}
+
+.p-dropdown-empty-message,
+.p-multiselect-empty-message {
+    @apply text-slate-400;
+}
+
+.p-placeholder {
+    @apply text-slate-400;
+}
+
+.p-dropdown-label, .p-multiselect-label {
+    @apply py-1.5 sm:leading-6 rounded-md;
+}
+
+.p-inputwrapper-focus {
+    @apply ring-1 ring-primary-600; 
+}
+
+.p-highlight {
+    @apply bg-primary-200 text-primary-600;
+}
+
+.p-multiselect-token {
+    @apply text-2xs py-0;
+}

@@ -1,0 +1,17 @@
+.ag-overlay {
+    pointer-events: auto !important;
+}
+
+/* set the background color of many elements across the grid */
+.ag-theme-alpine {
+    --ag-font-family: Lato,
+        Helvetica,
+        sans-serif;
+    --ag-header-background-color: theme('colors.slate.100');
+    --ag-odd-row-background-color: theme('colors.slate.50'); 
+    --ag-row-hover-color: theme('colors.primary.100')
+}
+
+.ag-root-wrapper {
+    @apply rounded-md;
+}
