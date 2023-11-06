@@ -20,6 +20,7 @@ import {
   Assignment,
   AssignmentsGridInterface,
   EligibleMapper,
+  GenericAssignmentGridCell,
   GenericAssignmentsGridInterface,
   Underwriter,
 } from "../../types/config";
@@ -147,6 +148,14 @@ const Assignments = () => {
       },
       tooltipValueGetter: (params) => {
         return valueFormatter_AssignmentCell(params, true);
+      },
+      comparator: (a: any, b: any) => {
+        const val_a = formatter(a);
+        const val_b = formatter(b);
+
+        if (val_a == null) return 1;
+        if (val_b == null) return 1;
+        return val_a < val_b ? -1 : 1;
       },
       valueSetter: (params) => {
         const column = params.column.getColId();
@@ -338,6 +347,24 @@ const headerNameHandler = (case_size: EligibleMapper) => {
   if (case_size.lower <= 0) return `< ${case_size.upper}`;
   if (case_size.upper >= 9999999) return `\u{2265} ${case_size.lower}`;
   return `${case_size.lower} - ${case_size.upper - 1}`;
+};
+
+const formatter = (val: any) => {
+  if (!val) return null;
+  const { assignments } = val;
+  if (!assignments) {
+    return val.name;
+  }
+  if (!Array.isArray(assignments)) return null;
+  if (assignments.length === 0) return null;
+
+  return assignments
+    .map((assignment: Assignment) => {
+      return `${assignment.underwriter.name} (${(
+        assignment.allocation_pct * 100
+      ).toFixed(0)}%)`;
+    })
+    .join(" / ");
 };
 
 const valueFormatter_AssignmentCell = (
