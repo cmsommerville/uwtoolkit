@@ -122,7 +122,7 @@ const ConfigureCaseSize = (props: Props) => {
                         onChange={(e) =>
                           changeHandler(ix, "lower", e.target.value)
                         }
-                        onBlur={(e) => lowerUpperHandler()}
+                        onBlur={() => lowerUpperHandler()}
                       />
                     </div>
                     <div className="col-span-4 mx-3 flex items-center space-x-2 text-sm">
