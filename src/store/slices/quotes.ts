@@ -7,7 +7,7 @@ const quoteDataSlice = createSlice({
   name: "quotes",
   initialState,
   reducers: {
-    setQuoteData(state, action) {
+    setQuoteData(_state, action) {
       return [...action.payload];
     },
   },

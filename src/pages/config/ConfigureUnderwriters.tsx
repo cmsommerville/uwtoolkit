@@ -82,7 +82,7 @@ const ConfigureUnderwriters = () => {
                     type="checkbox"
                     className="h-4 w-4 mx-3 rounded border-gray-300 text-primary-600 focus:ring-primary-600"
                     checked={u.type === "underwriter"}
-                    onChange={(e) => {
+                    onChange={() => {
                       const newType =
                         u.type === "underwriter" ? "support" : "underwriter";
                       changeHandler(ix, "type", newType);

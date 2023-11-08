@@ -20,7 +20,6 @@ import {
   Assignment,
   AssignmentsGridInterface,
   EligibleMapper,
-  GenericAssignmentGridCell,
   GenericAssignmentsGridInterface,
   Underwriter,
 } from "../../types/config";

@@ -7,7 +7,7 @@ const rulesetDataSlice = createSlice({
   name: "rulesets",
   initialState,
   reducers: {
-    saveRulesets: (state, action) => {
+    saveRulesets: (_state, action) => {
       return [...action.payload];
     },
   },

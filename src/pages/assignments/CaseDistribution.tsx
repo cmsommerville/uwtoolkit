@@ -28,7 +28,7 @@ const countByUnderwriter = (
     const { group, ...vals } = row;
 
     // loop over the case size columns
-    Object.entries(vals).forEach(([case_size, assignment_cell]) => {
+    Object.entries(vals).forEach(([_case_size, assignment_cell]) => {
       const count = assignment_cell.count;
       total_count += count;
 
