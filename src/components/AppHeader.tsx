@@ -1,12 +1,12 @@
 "use client";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { Disclosure } from "@headlessui/react";
 
 import "primereact/resources/themes/soho-light/theme.css";
 
 const navigation = [
-  { name: "Assignments", href: "/assignments" },
-  { name: "Quote Data", href: "/quotes" },
+  { name: "Home", href: "/" },
+  { name: "Data", href: "/quotes" },
   { name: "Configure", href: "/config" },
 ];
 
@@ -18,8 +18,10 @@ export default function AppHeader() {
           <div className="flex justify-between h-16 w-full">
             <div className="flex justify-between w-full">
               <div className="flex flex-shrink-0 items-center tracking-wider font-bold text-lg">
-                <span className="text-slate-500">UW</span>
-                <span className="text-primary-500">Toolkit</span>
+                <Link to="/">
+                  <span className="text-slate-500">UW</span>
+                  <span className="text-primary-500">Toolkit</span>
+                </Link>
               </div>
               <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                 {navigation.map((item) => (

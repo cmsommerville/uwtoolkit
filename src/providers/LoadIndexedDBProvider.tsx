@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AnyAction, Dispatch } from "@reduxjs/toolkit";
 import { useNavigate } from "react-router-dom";
@@ -29,7 +29,38 @@ import {
 
 import { BrokerType, RulesetType } from "../types/rulesets";
 import { QuoteDataInterface } from "../types/upload_file";
-import { EligibleMapper, Underwriter } from "../types/config";
+import {
+  AssignmentsGridInterface,
+  EligibleMapper,
+  Underwriter,
+} from "../types/config";
+
+const calculateLoadStatus = (
+  quotes: QuoteDataInterface[] | null | undefined,
+  underwriters: Underwriter[] | null | undefined,
+  case_sizes: EligibleMapper[] | null | undefined,
+  rulesets: RulesetType[] | null | undefined
+) => {
+  if (
+    quotes &&
+    quotes.length &&
+    underwriters &&
+    underwriters.length &&
+    case_sizes &&
+    case_sizes.length &&
+    rulesets &&
+    rulesets.length
+  )
+    return "FULLY_CONFIGURED";
+  if (
+    (!quotes || quotes.length === 0) &&
+    (!underwriters || underwriters.length === 0) &&
+    (!case_sizes || case_sizes.length === 0) &&
+    (!rulesets || rulesets.length === 0)
+  )
+    return "NOT_CONFIGURED";
+  return "PARTIALLY_CONFIGURED";
+};
 
 const fileListHandler = async (
   file_list: FileList,
@@ -48,14 +79,20 @@ const fileListHandler = async (
 
 const loadData = async (dispatch: Dispatch<AnyAction>) => {
   const [file_list, rulesets, assignments, case_sizes, underwriters] =
-    await Promise.all([
+    (await Promise.all([
       db.getItem(KEY_CASE_FILES),
       db.getItem(KEY_RULESETS),
       db.getItem(KEY_ASSIGNMENTS),
       db.getItem(KEY_CASE_SIZES),
       db.getItem(KEY_UNDERWRITERS),
-    ]);
-  let quotes: QuoteDataInterface[];
+    ])) as [
+      FileList | null,
+      RulesetType[] | null,
+      AssignmentsGridInterface[] | null,
+      EligibleMapper[] | null,
+      Underwriter[] | null
+    ];
+  let quotes: QuoteDataInterface[] = [];
   if (file_list) {
     quotes = await fileListHandler(file_list as FileList, dispatch);
     dispatch(
@@ -70,13 +107,21 @@ const loadData = async (dispatch: Dispatch<AnyAction>) => {
   if (rulesets) dispatch(saveRulesets(rulesets));
   if (case_sizes) dispatch(setCaseSizes(case_sizes));
   if (underwriters) dispatch(setUnderwriters(underwriters));
+
+  return calculateLoadStatus(quotes, underwriters, case_sizes, rulesets);
 };
 
 const useLoadIndexedDB = () => {
   const dispatch = useDispatch();
+  const [initialStatus, setInitialStatus] = useState<string>();
+
   useEffect(() => {
-    loadData(dispatch);
+    loadData(dispatch).then((status) => {
+      setInitialStatus(status);
+    });
   }, [dispatch]);
+
+  return initialStatus;
 };
 
 interface Props {
@@ -84,7 +129,7 @@ interface Props {
 }
 
 const LoadIndexedDBProvider = (props: Props) => {
-  useLoadIndexedDB();
+  const initialStatus = useLoadIndexedDB();
   const navigate = useNavigate();
   const underwriters: Underwriter[] = useSelector(
     (state: any) => state.config.underwriters
@@ -105,25 +150,7 @@ const LoadIndexedDBProvider = (props: Props) => {
   else resumePath = "/assignments";
 
   const status = useMemo(() => {
-    if (
-      quotes &&
-      quotes.length &&
-      underwriters &&
-      underwriters.length &&
-      case_sizes &&
-      case_sizes.length &&
-      rulesets &&
-      rulesets.length
-    )
-      return "FULLY_CONFIGURED";
-    if (
-      (!quotes || quotes.length === 0) &&
-      (!underwriters || underwriters.length === 0) &&
-      (!case_sizes || case_sizes.length === 0) &&
-      (!rulesets || rulesets.length === 0)
-    )
-      return "NOT_CONFIGURED";
-    return "PARTIALLY_CONFIGURED";
+    return calculateLoadStatus(quotes, underwriters, case_sizes, rulesets);
   }, [quotes, underwriters, case_sizes, rulesets]);
 
   useEffect(() => {
@@ -142,7 +169,7 @@ const LoadIndexedDBProvider = (props: Props) => {
   return (
     <>
       {props.children}
-      {status === "PARTIALLY_CONFIGURED" ? (
+      {initialStatus === "PARTIALLY_CONFIGURED" ? (
         <ResumeOrRestart resumePath={resumePath} />
       ) : null}
     </>
