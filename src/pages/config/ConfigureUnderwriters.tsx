@@ -40,7 +40,10 @@ const ConfigureUnderwriters = () => {
 
   const deleteHandler = (uuid: string) => {
     setLocalUnderwriters((prev) => {
-      return prev.filter((u) => u.uuid !== uuid);
+      const new_uws = prev.filter((u) => u.uuid !== uuid);
+      if (new_uws.length === 0)
+        return prev.map((uw) => ({ ...uw, name: "", type: "underwriter" }));
+      return new_uws;
     });
   };
 
@@ -50,7 +53,18 @@ const ConfigureUnderwriters = () => {
   };
 
   useEffect(() => {
-    setLocalUnderwriters([...underwriters.map((u) => ({ ...u }))]);
+    if (underwriters && underwriters.length > 0) {
+      setLocalUnderwriters([...underwriters.map((u) => ({ ...u }))]);
+    } else {
+      setLocalUnderwriters([
+        {
+          uuid: uuid() as string,
+          name: "",
+          color: "#dddddd",
+          type: "underwriter",
+        },
+      ]);
+    }
   }, [underwriters]);
   return (
     <>
@@ -66,6 +80,7 @@ const ConfigureUnderwriters = () => {
                   <input
                     type="input"
                     className="block w-full rounded-md border-0 pl-4 pr-10 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+                    placeholder="e.g. Sally"
                     value={u.name}
                     onChange={(e) => changeHandler(ix, "name", e.target.value)}
                   />

@@ -107,7 +107,7 @@ const EditRuleset = ({ ruleset, onSave, onCancel }: EditRulesetProps) => {
             name="group"
             id="group"
             className="px-4 block w-full rounded-md border border-slate-300 py-1.5 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-primary-600 outline-none sm:text-xs sm:leading-6"
-            placeholder="Group 1"
+            placeholder="e.g. Marsh & McLennan"
             value={localRuleset.group}
             onChange={(e) => localGroupUpdater(e.target.value)}
           />

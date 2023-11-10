@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { parseExcelFile } from "../../handlers/upload_file";
 import { db } from "../../store/local_storage";
 import { CASE_DATA_COLUMN_MAPPER } from "../../config";
+import { useStoreStatus } from "../../hooks/useStoreStatus";
 import FileUploader from "../../components/FileUploader";
 import AppPanel from "../../components/AppPanel";
 import { setQuoteData } from "../../store/slices/quotes";
@@ -93,6 +94,26 @@ interface AddBrokerRulesProps {
 }
 
 const AddBrokerRules = ({ new_broker_count }: AddBrokerRulesProps) => {
+  const storeStatus = useStoreStatus();
+  if (
+    storeStatus.quotes &&
+    !(
+      storeStatus.case_sizes &&
+      storeStatus.underwriters &&
+      storeStatus.rulesets
+    )
+  )
+    return (
+      <div className="flex justify-start">
+        <Link
+          className="bg-primary-500 ring-2 ring-primary-500 rounded px-3 py-1.5 shadow text-white hover:bg-primary-600 hover:ring-primary-600 disabled:bg-slate-400 disabled:ring-slate-400 transition duration-100"
+          to={"/config"}
+        >
+          <span>Next</span>
+        </Link>
+      </div>
+    );
+
   if (new_broker_count === 0) {
     return (
       <div className="flex justify-center items-center shadow bg-slate-100 p-4 rounded space-x-2">

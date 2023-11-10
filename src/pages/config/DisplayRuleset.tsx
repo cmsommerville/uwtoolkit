@@ -32,7 +32,7 @@ const DisplayRuleset = ({ ruleset, onDelete, onEdit }: DisplayRulesetProps) => {
             className=" font-semibold text-primary-500 hover:text-primary-700 transition duration-100"
             onClick={() => onEdit(ruleset)}
           >
-            Click to edit!
+            Click to add a Premier Broker!
           </button>
         </div>
         <button

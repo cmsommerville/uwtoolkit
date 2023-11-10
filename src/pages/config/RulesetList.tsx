@@ -27,7 +27,9 @@ const RulesetList = () => {
 
   const deleteRuleset = (ruleset: RulesetType) => {
     setRulesetList((prev) => {
-      const newRulesetList = prev.filter((r) => r.key !== ruleset.key);
+      const tmpRulesetList = prev.filter((r) => r.key !== ruleset.key);
+      const newRulesetList =
+        tmpRulesetList.length === 0 ? prev : tmpRulesetList;
       dispatch(saveRulesets(newRulesetList));
       dispatch(
         setRuleAppliedData({

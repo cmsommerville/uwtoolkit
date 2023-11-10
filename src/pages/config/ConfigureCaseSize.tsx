@@ -88,7 +88,10 @@ const ConfigureCaseSize = (props: Props) => {
 
   const deleteHandler = (uuid: string) => {
     setLocalCaseSizes((prev) => {
-      return prev.filter((row) => row.uuid !== uuid);
+      const new_case_sizes = prev.filter((row) => row.uuid !== uuid);
+      if (new_case_sizes.length === 0)
+        return prev.map((c) => ({ ...c, lower: null, upper: null }));
+      return new_case_sizes;
     });
     lowerUpperHandler();
     setIsPristineState(false);
@@ -100,8 +103,13 @@ const ConfigureCaseSize = (props: Props) => {
   };
 
   useEffect(() => {
-    setLocalCaseSizes([...case_sizes.map((x) => ({ ...x }))]);
+    if (case_sizes && case_sizes.length > 0) {
+      setLocalCaseSizes([...case_sizes.map((x) => ({ ...x }))]);
+    } else {
+      setLocalCaseSizes([{ uuid: uuid(), key: "", lower: null, upper: null }]);
+    }
   }, [case_sizes]);
+
   return (
     <div className={props.className ?? ""}>
       <div>
@@ -119,6 +127,7 @@ const ConfigureCaseSize = (props: Props) => {
                         id={`lower-${u.uuid}`}
                         className="w-20 text-right block w-full rounded-md border-0 px-4 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                         value={formatNumber(u.lower)}
+                        placeholder={`${ix * 1000}`}
                         onChange={(e) =>
                           changeHandler(ix, "lower", e.target.value)
                         }
