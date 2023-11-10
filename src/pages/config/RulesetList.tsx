@@ -120,7 +120,7 @@ const add = (): RulesetType => {
     rules: [
       {
         key: uuid(),
-        field: undefined,
+        field: "broker",
         operator: "in" as const,
         value: undefined,
       },

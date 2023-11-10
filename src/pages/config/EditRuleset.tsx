@@ -9,11 +9,12 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { ListRuleType, RulesetType } from "../../types/rulesets";
+import { QuoteDataInterface } from "../../types/upload_file";
 
 const addRule = () => {
   return {
     key: uuid(),
-    field: undefined,
+    field: "broker" as keyof QuoteDataInterface,
     operator: "in" as const,
     value: undefined,
   };
