@@ -98,20 +98,23 @@ const AddBrokerRules = ({ new_broker_count }: AddBrokerRulesProps) => {
       <div className="flex justify-center items-center shadow bg-slate-100 p-4 rounded space-x-2">
         <CheckCircleIcon className="text-green-500 w-10 h-10" />
         <span className="inline-block text-sm text-slate-600">
-          No new brokers since last upload!
+          <p>No new brokers since last upload!</p>
         </span>
       </div>
     );
   }
 
   return (
-    <div className="flex justify-center items-center shadow bg-amber-200 p-4 rounded space-x-2">
+    <div className="flex flex-col justify-center items-center shadow bg-amber-200 p-4 rounded space-y-2">
       <ExclamationCircleIcon className="text-primary-400 w-10 h-10" />
       <Link
         to={"/config"}
-        className="ml-1 text-sm text-primary-500 hover:text-primary-700 transition duration-100"
+        className="ml-1 text-sm text-center text-primary-500 hover:text-primary-700 transition duration-100 space-y-4"
       >
-        {new_broker_count} new brokers!
+        <div className="space-y-2">
+          <p>{new_broker_count} new brokers!</p>
+          <p>Click here to add new Premier brokers rules.</p>
+        </div>
       </Link>
     </div>
   );
