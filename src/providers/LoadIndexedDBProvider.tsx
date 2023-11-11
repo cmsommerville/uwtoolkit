@@ -10,14 +10,14 @@ import { parseExcelFile } from "../handlers/upload_file";
 import { CASE_DATA_COLUMN_MAPPER } from "../config";
 import { newBrokerAnalyzer } from "../handlers/broker_handlers";
 
-import { saveRulesets } from "../store/slices/rulesets";
-import { setQuoteData } from "../store/slices/quotes";
 import {
   setBrokers,
   setCaseSizes,
+  setQuoteData,
+  setRulesets,
   setUnderwriters,
-} from "../store/slices/config";
-import { setRuleAppliedData } from "../store/slices/derived_data";
+  calcRuleAppliedData,
+} from "../store/slices/data";
 import {
   KEY_ASSIGNMENTS,
   KEY_RULESETS,
@@ -27,13 +27,14 @@ import {
   KEY_UNDERWRITERS,
 } from "../store/constants";
 
-import { BrokerType, RulesetType } from "../types/rulesets";
-import { QuoteDataInterface } from "../types/upload_file";
 import {
+  BrokerType,
+  RulesetType,
+  QuoteDataInterface,
   AssignmentsGridInterface,
   EligibleMapper,
   Underwriter,
-} from "../types/config";
+} from "../types/data";
 
 const calculateLoadStatus = (
   quotes: QuoteDataInterface[] | null | undefined,
@@ -96,7 +97,7 @@ const loadData = async (dispatch: Dispatch<AnyAction>) => {
   if (file_list) {
     quotes = await fileListHandler(file_list as FileList, dispatch);
     dispatch(
-      setRuleAppliedData({
+      calcRuleAppliedData({
         quotes,
         rulesets,
         assignments,
@@ -104,7 +105,7 @@ const loadData = async (dispatch: Dispatch<AnyAction>) => {
       })
     );
   }
-  if (rulesets) dispatch(saveRulesets(rulesets));
+  if (rulesets) dispatch(setRulesets(rulesets));
   if (case_sizes) dispatch(setCaseSizes(case_sizes));
   if (underwriters) dispatch(setUnderwriters(underwriters));
 
@@ -132,14 +133,16 @@ const LoadIndexedDBProvider = (props: Props) => {
   const initialStatus = useLoadIndexedDB();
   const navigate = useNavigate();
   const underwriters: Underwriter[] = useSelector(
-    (state: any) => state.config.underwriters
+    (state: any) => state.data.underwriters
   );
   const case_sizes: EligibleMapper[] = useSelector(
-    (state: any) => state.config.case_sizes
+    (state: any) => state.data.case_sizes
   );
-  const rulesets: RulesetType[] = useSelector((state: any) => state.rulesets);
+  const rulesets: RulesetType[] = useSelector(
+    (state: any) => state.data.rulesets
+  );
   const quotes: QuoteDataInterface[] = useSelector(
-    (state: any) => state.quotes
+    (state: any) => state.data.quotes
   );
 
   let resumePath: string = "/";

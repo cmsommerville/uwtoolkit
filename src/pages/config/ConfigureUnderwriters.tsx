@@ -2,20 +2,20 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuid } from "uuid";
-import { Underwriter } from "../../types/config";
+import { Underwriter } from "../../types/data";
 import {
   ArrowUpOnSquareIcon,
   PlusIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
-import { setUnderwriters } from "../../store/slices/config";
+import { setUnderwriters, calcRuleAppliedData } from "../../store/slices/data";
 import { KEY_UNDERWRITERS } from "../../store/constants";
 import { db } from "../../store/local_storage";
 
 const ConfigureUnderwriters = () => {
   const dispatch = useDispatch();
   const underwriters: Underwriter[] = useSelector(
-    (state: any) => state.config.underwriters
+    (state: any) => state.data.underwriters
   );
   const [localUnderwriters, setLocalUnderwriters] = useState<Underwriter[]>([]);
 
@@ -50,6 +50,7 @@ const ConfigureUnderwriters = () => {
   const saveHandler = () => {
     db.setItem(KEY_UNDERWRITERS, localUnderwriters);
     dispatch(setUnderwriters(localUnderwriters));
+    dispatch(calcRuleAppliedData({ underwriters: localUnderwriters }));
   };
 
   useEffect(() => {

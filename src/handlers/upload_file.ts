@@ -2,7 +2,7 @@ import { read as xlsxRead } from "xlsx";
 import {
   ColumnMapperInterface,
   ReadExcelDataConfigInterface,
-} from "../types/upload_file";
+} from "../types/data";
 
 export const readExcelData = (
   buffer: ArrayBuffer,

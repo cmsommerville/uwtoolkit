@@ -1,4 +1,4 @@
-import { RulesetType } from "../../types/rulesets";
+import { RulesetType } from "../../types/data";
 import { CASE_DATA_COLUMN_MAPPER } from "../../config";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 

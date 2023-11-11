@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { ColumnMapperInterface } from "./types/upload_file";
+import { ColumnMapperInterface } from "./types/data";
 
 export const CASE_DATA_COLUMN_MAPPER: ColumnMapperInterface[] = [
   {

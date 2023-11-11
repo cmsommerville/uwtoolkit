@@ -8,8 +8,11 @@ import {
   XCircleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { ListRuleType, RulesetType } from "../../types/rulesets";
-import { QuoteDataInterface } from "../../types/upload_file";
+import {
+  ListRuleType,
+  QuoteDataInterface,
+  RulesetType,
+} from "../../types/data";
 
 const addRule = () => {
   return {

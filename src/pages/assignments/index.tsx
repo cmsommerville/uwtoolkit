@@ -15,14 +15,14 @@ import {
 } from "ag-grid-community";
 import { useSelector, useDispatch } from "react-redux";
 import { db } from "../../store/local_storage";
-import { updateAssignment } from "../../store/slices/derived_data";
+import { updateAssignment } from "../../store/slices/data";
 import {
   Assignment,
   AssignmentsGridInterface,
   EligibleMapper,
   GenericAssignmentsGridInterface,
   Underwriter,
-} from "../../types/config";
+} from "../../types/data";
 import { KEY_ASSIGNMENTS } from "../../store/constants";
 
 const AssignmentCellRenderer = (params: any) => {
@@ -99,13 +99,13 @@ const toggleAssignments = (
 const Assignments = () => {
   const dispatch = useDispatch();
   const assignments: AssignmentsGridInterface[] = useSelector(
-    (state: any) => state.derived.assignments
+    (state: any) => state.data.assignments
   );
   const underwriters: Underwriter[] = useSelector(
-    (state: any) => state.config.underwriters
+    (state: any) => state.data.underwriters
   );
   const case_sizes: EligibleMapper[] = useSelector(
-    (state: any) => state.config.case_sizes
+    (state: any) => state.data.case_sizes
   );
 
   const [multAssignmentContext, setMultAssignmentContext] =

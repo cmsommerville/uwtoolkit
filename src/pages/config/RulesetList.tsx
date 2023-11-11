@@ -2,19 +2,16 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import EditRuleset from "./EditRuleset";
 import DisplayRuleset from "./DisplayRuleset";
-import { RulesetType } from "../../types/rulesets";
+import { RulesetType } from "../../types/data";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { v4 as uuid } from "uuid";
-import { saveRulesets } from "../../store/slices/rulesets";
-import { setRuleAppliedData } from "../../store/slices/derived_data";
+import { calcRuleAppliedData, setRulesets } from "../../store/slices/data";
 import { db } from "../../store/local_storage";
 import { KEY_RULESETS } from "../../store/constants";
 
 const RulesetList = () => {
   const dispatch = useDispatch();
-  const storeRulesets = useSelector((state: any) => state.rulesets);
-  const quotes = useSelector((state: any) => state.quotes);
-  const case_sizes = useSelector((state: any) => state.config.case_sizes);
+  const storeRulesets = useSelector((state: any) => state.data.rulesets);
 
   const [rulesetList, setRulesetList] = useState<RulesetType[]>([add()]);
   const [editingKey, setEditingKey] = useState<string>();
@@ -30,13 +27,10 @@ const RulesetList = () => {
       const tmpRulesetList = prev.filter((r) => r.key !== ruleset.key);
       const newRulesetList =
         tmpRulesetList.length === 0 ? prev : tmpRulesetList;
-      dispatch(saveRulesets(newRulesetList));
+      dispatch(setRulesets(newRulesetList));
       dispatch(
-        setRuleAppliedData({
-          quotes,
+        calcRuleAppliedData({
           rulesets: newRulesetList,
-          assignments: undefined,
-          case_sizes,
         })
       );
       db.setItem(KEY_RULESETS, newRulesetList);
@@ -56,13 +50,10 @@ const RulesetList = () => {
     const _rulesets = [...rulesetList];
     _rulesets.splice(editedIndex, 1, ruleset);
 
-    dispatch(saveRulesets(_rulesets));
+    dispatch(setRulesets(_rulesets));
     dispatch(
-      setRuleAppliedData({
-        quotes,
+      calcRuleAppliedData({
         rulesets: _rulesets,
-        assignments: undefined,
-        case_sizes,
       })
     );
 

@@ -1,8 +1,7 @@
 import { useMemo } from "react";
 import { AppMultiSelect, AppSelect } from "../../components/AppSelect";
 import { useSelector } from "react-redux";
-import { QuoteDataInterface } from "../../types/upload_file";
-import { ListRuleType } from "../../types/rulesets";
+import { ListRuleType, QuoteDataInterface } from "../../types/data";
 
 interface NameCode {
   name: string;
@@ -17,7 +16,7 @@ interface Props {
 
 const ListRule = ({ fields, onChange, selection }: Props) => {
   const quotes: QuoteDataInterface[] = useSelector(
-    (state: any) => state.quotes
+    (state: any) => state.data.quotes
   );
 
   const val = useMemo(() => {

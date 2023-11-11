@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import AppModal, { AppModalProps } from "../../components/AppModal";
-import { updateAssignment } from "../../store/slices/derived_data";
-import { Underwriter } from "../../types/config";
-import { Assignment } from "../../types/config";
+import { updateAssignment } from "../../store/slices/data";
+import { Assignment, Underwriter } from "../../types/data";
 import { ArrowUpOnSquareIcon } from "@heroicons/react/24/outline";
 
 interface Props extends Omit<AppModalProps, "children"> {

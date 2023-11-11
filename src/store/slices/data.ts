@@ -1,68 +1,101 @@
+import { DateTime } from "luxon";
 import { createSlice } from "@reduxjs/toolkit";
-import { RuleAppliedDataInterface, RulesetType } from "../../types/rulesets";
 import {
+  BrokerType,
+  RulesetType,
+  RuleAppliedDataInterface,
   Assignment,
   AssignmentGridCell,
   AssignmentsGridInterface,
   EligibleMapper,
-} from "../../types/config";
+  Underwriter,
+  QuoteDataInterface,
+} from "../../types/data";
 import { applyRulesets } from "../../handlers/broker_handlers";
-import { QuoteDataInterface } from "../../types/upload_file";
-import { DateTime } from "luxon";
 
-interface DerivedDataInterface {
+const initialState: {
+  quotes: QuoteDataInterface[];
+  rulesets: RulesetType[];
+  brokers: BrokerType[];
+  underwriters: Underwriter[];
+  case_sizes: EligibleMapper[];
   rule_applied_data: RuleAppliedDataInterface[];
   assignments: AssignmentsGridInterface[];
-}
-
-const initialState: DerivedDataInterface = {
+} = {
+  quotes: [],
+  rulesets: [],
+  brokers: [],
+  underwriters: [],
+  case_sizes: [],
   rule_applied_data: [],
   assignments: [],
 };
 
-interface AssignmentObject {
-  [k: string]: {
-    [c: string]: AssignmentGridCell;
-  };
-}
-
-const derivedDataSlice = createSlice({
-  name: "derived",
+const dataSlice = createSlice({
+  name: "data",
   initialState,
   reducers: {
-    setRuleAppliedData(state, action) {
+    setBrokers: (state, action) => {
+      return {
+        ...state,
+        brokers: action.payload.sort((a: BrokerType, b: BrokerType) =>
+          a.name < b.name ? -1 : 1
+        ),
+      };
+    },
+    setCaseSizes: (state, action) => {
+      return { ...state, case_sizes: [...action.payload] };
+    },
+    setQuoteData(state, action) {
+      return { ...state, quotes: [...action.payload] };
+    },
+    setRulesets: (state, action) => {
+      return { ...state, rulesets: [...action.payload] };
+    },
+    setUnderwriters: (state, action) => {
+      return { ...state, underwriters: [...action.payload] };
+    },
+    calcRuleAppliedData(state, action) {
       const {
-        quotes,
-        rulesets,
-        assignments: prev_assignment,
-        case_sizes,
-        config,
+        quotes: input_quotes,
+        rulesets: input_rulesets,
+        assignments: input_assignments,
+        case_sizes: input_case_sizes,
+        config: input_config,
       } = action.payload;
-      let _assignments = prev_assignment;
-      if (prev_assignment == null) {
-        _assignments = state.assignments;
-      }
+
+      const quotes = input_quotes ? input_quotes : state.quotes;
+      const rulesets = input_rulesets ? input_rulesets : state.rulesets;
+      const assignments = input_assignments
+        ? input_assignments
+        : state.assignments;
+      const case_sizes = input_case_sizes ? input_case_sizes : state.case_sizes;
+
+      if (quotes && quotes.length === 0) return state;
+      if (rulesets && rulesets.length === 0) return state;
+      if (case_sizes && case_sizes.length === 0) return state;
+
       let _quotes = quotes;
-      if (config) {
+      if (input_config) {
         _quotes = _quotes.filter((row: QuoteDataInterface) => {
           if (row.received_date == null) return false;
           const dt = DateTime.fromISO(row.received_date);
-          return dt >= config.min_dt && dt <= config.max_dt;
+          return dt >= input_config.min_dt && dt <= input_config.max_dt;
         });
       }
 
       const data = applyRulesets(_quotes, rulesets);
       const rule_applied_data = applyCaseSize(data, case_sizes);
 
-      const assignments = aggregateRuleAppliedData(
+      const assignment_rows = aggregateRuleAppliedData(
         rule_applied_data,
         rulesets,
         case_sizes,
-        _assignments
+        assignments
       );
       return {
         ...state,
-        assignments,
+        assignments: assignment_rows,
         rule_applied_data,
       };
     },
@@ -86,7 +119,6 @@ const derivedDataSlice = createSlice({
         [column]: { ...updateRow[column], [assignment_type]: assignment },
       } as AssignmentsGridInterface;
 
-      console.log(updateRow);
       state = {
         ...state,
         assignments: [
@@ -102,6 +134,12 @@ const derivedDataSlice = createSlice({
     },
   },
 });
+
+interface AssignmentObject {
+  [k: string]: {
+    [c: string]: AssignmentGridCell;
+  };
+}
 
 const applyCaseSize = (
   rule_applied_data: Omit<RuleAppliedDataInterface, "case_size">[],
@@ -229,7 +267,14 @@ const aggregateRuleAppliedData = (
     }) as AssignmentsGridInterface[];
 };
 
-export const { setRuleAppliedData, updateAssignment } =
-  derivedDataSlice.actions;
+export const {
+  calcRuleAppliedData,
+  updateAssignment,
+  setBrokers,
+  setCaseSizes,
+  setQuoteData,
+  setRulesets,
+  setUnderwriters,
+} = dataSlice.actions;
 
-export default derivedDataSlice.reducer;
+export default dataSlice.reducer;

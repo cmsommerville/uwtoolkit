@@ -1,7 +1,10 @@
 import { useSelector } from "react-redux";
-import { QuoteDataInterface } from "../types/upload_file";
-import { EligibleMapper, Underwriter } from "../types/config";
-import { RulesetType } from "../types/rulesets";
+import {
+  EligibleMapper,
+  QuoteDataInterface,
+  RulesetType,
+  Underwriter,
+} from "../types/data";
 
 export const calculateLoadStatus = (
   quotes: QuoteDataInterface[] | null | undefined,
@@ -31,10 +34,10 @@ export const calculateLoadStatus = (
 };
 
 export const useStoreStatus = () => {
-  const quotes = useSelector((state: any) => state.quotes);
-  const underwriters = useSelector((state: any) => state.config.underwriters);
-  const case_sizes = useSelector((state: any) => state.config.case_sizes);
-  const rulesets = useSelector((state: any) => state.rulesets);
+  const quotes = useSelector((state: any) => state.data.quotes);
+  const underwriters = useSelector((state: any) => state.data.underwriters);
+  const case_sizes = useSelector((state: any) => state.data.case_sizes);
+  const rulesets = useSelector((state: any) => state.data.rulesets);
 
   return {
     quotes: !!(quotes && quotes.length),

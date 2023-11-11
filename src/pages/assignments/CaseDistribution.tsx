@@ -1,9 +1,6 @@
 import { useMemo } from "react";
 import AppGrid from "../../components/AppGrid";
-import {
-  GenericAssignmentsGridInterface,
-  Underwriter,
-} from "../../types/config";
+import { GenericAssignmentsGridInterface, Underwriter } from "../../types/data";
 import { ColDef } from "ag-grid-community";
 
 interface Props {

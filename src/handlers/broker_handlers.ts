@@ -1,9 +1,9 @@
-import { QuoteDataInterface } from "../types/upload_file";
 import {
   BrokerType,
+  QuoteDataInterface,
   RulesetType,
   RuleAppliedDataInterface,
-} from "../types/rulesets";
+} from "../types/data";
 
 /**
  *
@@ -17,7 +17,7 @@ export const applyRulesets = (
   rulesets: RulesetType[],
   default_broker: string = "Non-Premier Broker"
 ) => {
-  let rule_applied_ids: Set<number> = new Set();
+  const rule_applied_ids: Set<number> = new Set();
   let rule_applied_data: Omit<RuleAppliedDataInterface, "case_size">[] = [];
 
   // loop over the rulesets and apply to data rows in bulk

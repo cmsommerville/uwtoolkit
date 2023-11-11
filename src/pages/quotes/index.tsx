@@ -8,14 +8,12 @@ import { CASE_DATA_COLUMN_MAPPER } from "../../config";
 import { useStoreStatus } from "../../hooks/useStoreStatus";
 import FileUploader from "../../components/FileUploader";
 import AppPanel from "../../components/AppPanel";
-import { setQuoteData } from "../../store/slices/quotes";
-import { setBrokers } from "../../store/slices/config";
+import { setBrokers, setQuoteData } from "../../store/slices/data";
 import { newBrokerAnalyzer } from "../../handlers/broker_handlers";
 import { KEY_BROKER_LIST } from "../../store/constants";
-import { BrokerType } from "../../types/rulesets";
 import AppGrid from "../../components/AppGrid";
 import { ColDef, GridApi } from "ag-grid-community";
-import { QuoteDataInterface } from "../../types/upload_file";
+import { BrokerType, QuoteDataInterface } from "../../types/data";
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -23,11 +21,9 @@ import {
 
 const QuoteData = () => {
   const dispatch = useDispatch();
-  const brokers: BrokerType[] = useSelector(
-    (state: any) => state.config.brokers
-  );
+  const brokers: BrokerType[] = useSelector((state: any) => state.data.brokers);
   const quotes: QuoteDataInterface[] = useSelector(
-    (state: any) => state.quotes
+    (state: any) => state.data.quotes
   );
   const [gridApi, setGridApi] = useState<GridApi>();
 

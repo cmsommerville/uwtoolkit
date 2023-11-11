@@ -2,14 +2,14 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuid } from "uuid";
-import { EligibleMapper } from "../../types/config";
+import { EligibleMapper } from "../../types/data";
 import {
   ArrowUpOnSquareIcon,
   PlusIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { db } from "../../store/local_storage";
-import { setCaseSizes } from "../../store/slices/config";
+import { setCaseSizes, calcRuleAppliedData } from "../../store/slices/data";
 import { KEY_CASE_SIZES } from "../../store/constants";
 
 interface Props {
@@ -19,7 +19,7 @@ interface Props {
 const ConfigureCaseSize = (props: Props) => {
   const dispatch = useDispatch();
   const case_sizes: EligibleMapper[] = useSelector(
-    (state: any) => state.config.case_sizes
+    (state: any) => state.data.case_sizes
   );
   const [localCaseSizes, setLocalCaseSizes] = useState<EligibleMapper[]>([]);
   const [isPristineState, setIsPristineState] = useState(true);
@@ -100,6 +100,7 @@ const ConfigureCaseSize = (props: Props) => {
   const saveHandler = () => {
     db.setItem(KEY_CASE_SIZES, localCaseSizes);
     dispatch(setCaseSizes(localCaseSizes));
+    dispatch(calcRuleAppliedData({ case_sizes: localCaseSizes }));
   };
 
   useEffect(() => {
