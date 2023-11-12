@@ -3,16 +3,17 @@ import { Disclosure, Transition } from "@headlessui/react";
 import ConfigureUnderwriters from "./ConfigureUnderwriters";
 import ConfigureCaseSize from "./ConfigureCaseSize";
 import RulesetList from "./RulesetList";
+import AppPanel from "../../components/AppPanel";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 
 const Config = () => {
   return (
     <div className="grid grid-cols-4 gap-8">
-      <div className="col-span-3 shadow-md px-8 py-8 bg-white h-min">
+      <AppPanel className="col-span-3 h-min">
         <RulesetList />
-      </div>
+      </AppPanel>
       <div className="flex flex-col space-y-8">
-        <div className="shadow-md px-8 py-8 bg-white">
+        <AppPanel className="lg:px-8 lg:py-8">
           <Disclosure>
             {({ open }) => (
               <>
@@ -42,9 +43,9 @@ const Config = () => {
               </>
             )}
           </Disclosure>
-        </div>
+        </AppPanel>
 
-        <div className="shadow-md px-8 py-8 bg-white">
+        <AppPanel className="lg:px-8 lg:py-8">
           <Disclosure>
             {({ open }) => (
               <>
@@ -74,7 +75,7 @@ const Config = () => {
               </>
             )}
           </Disclosure>
-        </div>
+        </AppPanel>
       </div>
     </div>
   );

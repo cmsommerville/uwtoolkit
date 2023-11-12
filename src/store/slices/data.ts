@@ -127,6 +127,8 @@ const dataSlice = createSlice({
         ].sort((a, b) => {
           if (a.group == null) return 1;
           if (b.group == null) return 1;
+          if (a.group === "Non-Premier Broker") return 1;
+          if (b.group === "Non-Premier Broker") return 1;
           return a.group < b.group ? -1 : 1;
         }),
       };
@@ -263,6 +265,8 @@ const aggregateRuleAppliedData = (
     .sort((a, b) => {
       if (a.group == null) return 1;
       if (b.group == null) return 1;
+      if (a.group === "Non-Premier Broker") return 1;
+      if (b.group === "Non-Premier Broker") return 1;
       return a.group < b.group ? -1 : 1;
     }) as AssignmentsGridInterface[];
 };
