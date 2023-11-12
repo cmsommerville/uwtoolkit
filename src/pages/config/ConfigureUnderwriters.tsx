@@ -11,6 +11,7 @@ import {
 import { setUnderwriters, calcRuleAppliedData } from "../../store/slices/data";
 import { KEY_UNDERWRITERS } from "../../store/constants";
 import { db } from "../../store/local_storage";
+import "./ConfigureUnderwriters.css";
 
 const ConfigureUnderwriters = () => {
   const dispatch = useDispatch();
@@ -88,7 +89,7 @@ const ConfigureUnderwriters = () => {
 
                   <input
                     type="color"
-                    className="absolute inset-y-0 w-8 h-full bg-transparent right-1 flex items-center cursor-pointer"
+                    className="input-color-rounded absolute inset-y-0 bg-transparent right-1 flex items-center cursor-pointer"
                     value={u.color}
                     onChange={(e) => changeHandler(ix, "color", e.target.value)}
                   />
