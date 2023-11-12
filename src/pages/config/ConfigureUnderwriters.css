@@ -1,14 +1,14 @@
 .input-color-rounded {
     -webkit-appearance: none;
     @apply p-0 w-6 h-6 rounded; 
-    top: 5px;
+    top: 50%;
 }
 .input-color-rounded::-webkit-color-swatch {
     @apply p-0 w-6 h-6 rounded;
-    top: 5px;
+    transform: translate(0, -50%);
 }
 
 .input-color-rounded::-webkit-color-swatch-wrapper {
     @apply p-0 w-6 h-6 rounded; 
-    top: 5px;
+    top: 50%;
 }
