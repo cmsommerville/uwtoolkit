@@ -9,7 +9,7 @@ interface ConfigSlideoverProps {
 }
 
 export default function ConfigSlideover(props: ConfigSlideoverProps) {
-  const quotes = useSelector((state: any) => state.quotes);
+  const quotes = useSelector((state: any) => state.data.quotes);
   const [open, setOpen] = useState(false);
   const [localMinDate, setLocalMinDate] = useState<DateTime>();
   const [localMaxDate, setLocalMaxDate] = useState<DateTime>();
