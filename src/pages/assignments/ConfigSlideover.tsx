@@ -3,6 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { useSelector } from "react-redux";
 import { DateTime } from "luxon";
 import { Cog6ToothIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import ConfigureUnderwriters from "../config/ConfigureUnderwriters";
 
 interface ConfigSlideoverProps {
   className?: string;
@@ -125,6 +126,9 @@ export default function ConfigSlideover(props: ConfigSlideoverProps) {
                               }
                             />
                           </div>
+                        </div>
+                        <div className="w-3/4">
+                          <ConfigureUnderwriters />
                         </div>
                       </div>
                     </div>

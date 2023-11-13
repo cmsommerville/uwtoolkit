@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import EditRuleset from "./EditRuleset";
 import DisplayRuleset from "./DisplayRuleset";
@@ -8,6 +8,8 @@ import { v4 as uuid } from "uuid";
 import { calcRuleAppliedData, setRulesets } from "../../store/slices/data";
 import { db } from "../../store/local_storage";
 import { KEY_RULESETS } from "../../store/constants";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import SixDotsIcon from "../../icons/drag-dots-svgrepo-com.svg?react";
 
 const RulesetList = () => {
   const dispatch = useDispatch();
@@ -20,6 +22,17 @@ const RulesetList = () => {
     const newRuleset = add();
     setEditingKey(newRuleset.key);
     setRulesetList((prev) => [...prev, newRuleset]);
+  };
+
+  const reorderRuleset = (draggable: any) => {
+    setRulesetList((prev) => {
+      if (!draggable.destination) return prev;
+      if (!draggable.source) return prev;
+      const p = [...prev];
+      const [draggedItem] = p.splice(draggable.source.index, 1);
+      p.splice(draggable.destination.index, 0, draggedItem);
+      return [...p];
+    });
   };
 
   const deleteRuleset = (ruleset: RulesetType) => {
@@ -71,35 +84,66 @@ const RulesetList = () => {
     <div className="relative">
       {editingKey ? null : (
         <button
-          className="z-20 absolute -bottom-12 -right-12 w-12 h-12 p-3 flex justify-center items-center rounded-full bg-primary-500 ring-2 ring-primary-500 text-white hover:bg-primary-700 hover:ring-primary-700 transition duration-100 shadow"
+          className="z-20 absolute -bottom-16 -right-16 w-12 h-12 p-3 flex justify-center items-center rounded-full bg-primary-500 ring-2 ring-primary-500 text-white hover:bg-primary-700 hover:ring-primary-700 transition duration-100 shadow"
           onClick={addRuleset}
         >
           <PlusIcon className="" />
         </button>
       )}
 
-      <div className="space-y-4">
-        {rulesetList.map((ruleset) => {
-          if (editingKey === ruleset.key) {
+      <DragDropContext onDragEnd={reorderRuleset}>
+        <Droppable droppableId="ruleset-list">
+          {(provided) => {
             return (
-              <EditRuleset
-                key={ruleset.key}
-                ruleset={ruleset}
-                onSave={saveRulesetHandler}
-                onCancel={() => cancelHandler(ruleset)}
-              />
+              <div
+                className="space-y-4"
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {rulesetList.map((ruleset, ix) => {
+                  if (editingKey === ruleset.key) {
+                    return (
+                      <EditRuleset
+                        ruleset={ruleset}
+                        onSave={saveRulesetHandler}
+                        onCancel={() => cancelHandler(ruleset)}
+                      />
+                    );
+                  }
+
+                  return (
+                    <Draggable
+                      key={ruleset.key}
+                      draggableId={ruleset.key ?? "xasdfa"}
+                      index={ix}
+                    >
+                      {(prov) => {
+                        return (
+                          <DisplayRuleset
+                            ruleset={ruleset}
+                            onEdit={(ruleset) => setEditingKey(ruleset.key)}
+                            onDelete={deleteRuleset}
+                            ref={prov.innerRef}
+                            {...prov.draggableProps}
+                          >
+                            <div
+                              className="h-4 w-4 text-slate-400"
+                              {...prov.dragHandleProps}
+                            >
+                              <SixDotsIcon />
+                            </div>
+                          </DisplayRuleset>
+                        );
+                      }}
+                    </Draggable>
+                  );
+                })}
+                {provided.placeholder}
+              </div>
             );
-          }
-          return (
-            <DisplayRuleset
-              key={ruleset.key}
-              ruleset={ruleset}
-              onEdit={(ruleset) => setEditingKey(ruleset.key)}
-              onDelete={deleteRuleset}
-            />
-          );
-        })}
-      </div>
+          }}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 };
