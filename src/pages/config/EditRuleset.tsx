@@ -1,9 +1,18 @@
-import { forwardRef, useState, useEffect, useMemo, LegacyRef } from "react";
+import {
+  forwardRef,
+  Fragment,
+  useState,
+  useEffect,
+  useMemo,
+  LegacyRef,
+} from "react";
+import { Menu, Transition } from "@headlessui/react";
 import ListRule from "./ListRule";
 import { CASE_DATA_COLUMN_MAPPER } from "../../config";
 import { v4 as uuid } from "uuid";
 import {
   DocumentCheckIcon,
+  ChevronDownIcon,
   PlusIcon,
   XCircleIcon,
   XMarkIcon,
@@ -103,6 +112,19 @@ const EditRuleset = forwardRef(
       onSave(localRuleset);
     };
 
+    const dropdown_options: DropdownOptionProps[] = [
+      {
+        name: "Cancel",
+        icon: <XMarkIcon />,
+        onClick: cancelHandler,
+      },
+      {
+        name: "Add Rule",
+        icon: <PlusIcon />,
+        onClick: addNewRule,
+      },
+    ];
+
     useEffect(() => {
       setLocalRuleset({ ...ruleset });
     }, [ruleset]);
@@ -110,77 +132,134 @@ const EditRuleset = forwardRef(
     return (
       <div
         ref={ref}
-        className="flex flex-col justify-between items-center px-4 py-4 bg-slate-50 shadow rounded-md"
+        className="flex justify-between items-start px-4 py-4 bg-slate-50 shadow rounded-md "
       >
-        <div className="grid grid-cols-12 gap-x-8">
-          <div className="col-span-3">
-            <input
-              name="group"
-              id="group"
-              className="px-4 block w-full rounded-md border border-slate-300 py-1.5 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-primary-600 outline-none sm:text-xs sm:leading-6"
-              placeholder="e.g. Marsh & McLennan"
-              value={localRuleset.group}
-              onChange={(e) => localGroupUpdater(e.target.value)}
-            />
+        <div className="pl-4 flex flex-col">
+          <div className="grid grid-cols-12 gap-x-8">
+            <div className="col-span-3">
+              <input
+                name="group"
+                id="group"
+                className="px-4 block w-full rounded-md border border-slate-300 py-1.5 text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-primary-600 outline-none sm:text-xs sm:leading-6"
+                placeholder="e.g. Marsh & McLennan"
+                value={localRuleset.group}
+                onChange={(e) => localGroupUpdater(e.target.value)}
+              />
+            </div>
+
+            <div className="col-span-9 flex flex-col space-y-2">
+              {localRuleset
+                ? localRuleset.rules.map((r) => {
+                    return (
+                      <div className="flex space-x-4 items-center" key={r.key}>
+                        <ListRule
+                          onChange={(selection) => localRuleUpdater(selection)}
+                          fields={fields}
+                          selection={r}
+                        />
+                        {localRuleset.rules.length <= 1 ? (
+                          <div className="w-8 h-8"></div>
+                        ) : (
+                          <button
+                            className="text-slate-500 hover:text-red-500 transition duration-100"
+                            onClick={() => deleteRule(r.key)}
+                          >
+                            <XCircleIcon className="w-6 h-6" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })
+                : null}
+            </div>
           </div>
 
-          <div className="col-span-9 flex flex-col space-y-2">
-            {localRuleset
-              ? localRuleset.rules.map((r) => {
-                  return (
-                    <div className="flex space-x-4 items-center" key={r.key}>
-                      <ListRule
-                        onChange={(selection) => localRuleUpdater(selection)}
-                        fields={fields}
-                        selection={r}
-                      />
-                      {localRuleset.rules.length <= 1 ? (
-                        <div className="w-8 h-8"></div>
-                      ) : (
-                        <button
-                          className="text-red-700 hover:text-red-500 transition duration-100"
-                          onClick={() => deleteRule(r.key)}
-                        >
-                          <XCircleIcon className="w-6 h-6" />
-                        </button>
-                      )}
-                    </div>
-                  );
-                })
-              : null}
-          </div>
-        </div>
+          <div className="relative w-full flex flex-row justify-end items-center">
+            <div className="flex justify-end items-end space-x-4 my-4 mr-12">
+              <button
+                className="flex items-center bg-primary-500 ring-2 ring-primary-500 rounded px-2 py-1 shadow text-white hover:bg-primary-600 hover:ring-primary-600 disabled:bg-slate-400 disabled:ring-slate-400 transition duration-100"
+                disabled={!isValidRuleset}
+                onClick={saveRuleset}
+              >
+                <DocumentCheckIcon className="w-5 h-5 mr-2" />
+                <span>Save</span>
+              </button>
 
-        <div className="w-full flex flex-row justify-between items-center">
-          <button
-            className="flex items-center bg-transparent ring-2 ring-primary-500 rounded px-2 py-1 shadow text-primary-500 hover:ring-primary-700 hover:text-primary-700 transition duration-100"
-            onClick={addNewRule}
-          >
-            <PlusIcon className="w-5 h-5 mr-1" />
-            <span>Add Rule</span>
-          </button>
-          <div className="flex justify-end items-end space-x-4 my-4 mr-12">
-            <button
-              className="flex items-center bg-primary-500 ring-2 ring-primary-500 rounded px-2 py-1 shadow text-white hover:bg-primary-600 hover:ring-primary-600 disabled:bg-slate-400 disabled:ring-slate-400 transition duration-100"
-              disabled={!isValidRuleset}
-              onClick={saveRuleset}
-            >
-              <DocumentCheckIcon className="w-5 h-5 mr-2" />
-              <span>Save</span>
-            </button>
-
-            <button
-              className="flex items-center bg-transparent ring-2 ring-slate-700 rounded px-2 py-1 shadow text-slate-700 hover:ring-slate-800 transition duration-100"
-              onClick={cancelHandler}
-            >
-              <XMarkIcon className="w-5 h-5 mr-2" />
-              <span>Cancel</span>
-            </button>
+              <Dropdown options={dropdown_options} />
+            </div>
           </div>
         </div>
       </div>
     );
   }
 );
+
+interface DropdownOptionProps {
+  name: string;
+  icon: React.ReactNode;
+  onClick: () => void;
+}
+
+interface DropdownProps {
+  options: DropdownOptionProps[];
+}
+
+const Dropdown = ({ options }: DropdownProps) => {
+  return (
+    <div className="text-right">
+      <Menu as="div" className="relative inline-block text-left">
+        <div>
+          <Menu.Button className="flex items-center bg-transparent ring-2 ring-slate-700 rounded px-2 py-1 shadow text-slate-700 hover:ring-slate-800 transition duration-100">
+            Options
+            <ChevronDownIcon
+              className="ml-2 -mr-1 h-5 w-5"
+              aria-hidden="true"
+            />
+          </Menu.Button>
+        </div>
+        <Transition
+          as={Fragment}
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+          <Menu.Items className="absolute z-20 right-0 mt-2 w-36 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none">
+            <div className="px-1 py-1 ">
+              {options.map((item) => {
+                return (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        className={`${
+                          active ? "bg-primary-500 text-white" : "text-gray-900"
+                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                        onClick={item.onClick}
+                      >
+                        {active ? (
+                          <div className="flex items-center space-x-2">
+                            <div className="w-5 h-5">{item.icon}</div>
+                            <span>{item.name}</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-2">
+                            <div className="w-5 h-5">{item.icon}</div>
+                            <span>{item.name}</span>
+                          </div>
+                        )}
+                      </button>
+                    )}
+                  </Menu.Item>
+                );
+              })}
+            </div>
+          </Menu.Items>
+        </Transition>
+      </Menu>
+    </div>
+  );
+};
 
 export default EditRuleset;
