@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import EditRuleset from "./EditRuleset";
 import DisplayRuleset from "./DisplayRuleset";
