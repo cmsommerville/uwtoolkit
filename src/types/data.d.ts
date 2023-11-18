@@ -6,6 +6,7 @@ export interface ColumnMapperInterface {
   parser: (
     val: string | number | null | undefined
   ) => string | number | null | undefined;
+  optional?: boolean;
 }
 
 export interface ReadExcelDataConfigInterface {

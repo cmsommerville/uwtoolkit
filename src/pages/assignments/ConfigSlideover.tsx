@@ -1,19 +1,33 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useCallback } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 import { Cog6ToothIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import ConfigureUnderwriters from "../config/ConfigureUnderwriters";
+import ConfigureCaseSize from "../config/ConfigureCaseSize";
+import { db } from "../../store/local_storage";
+import { setCaseSizes, calcRuleAppliedData } from "../../store/slices/data";
+import { KEY_CASE_SIZES } from "../../store/constants";
+import { EligibleMapper } from "../../types/data";
 
 interface ConfigSlideoverProps {
   className?: string;
 }
 
 export default function ConfigSlideover(props: ConfigSlideoverProps) {
+  const dispatch = useDispatch();
   const quotes = useSelector((state: any) => state.data.quotes);
   const [open, setOpen] = useState(false);
   const [localMinDate, setLocalMinDate] = useState<DateTime>();
   const [localMaxDate, setLocalMaxDate] = useState<DateTime>();
+
+  const saveCaseSizes = useCallback(
+    (case_sizes: EligibleMapper[]) => {
+      db.setItem(KEY_CASE_SIZES, case_sizes);
+      dispatch(setCaseSizes(case_sizes));
+      dispatch(calcRuleAppliedData({ case_sizes: case_sizes }));
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -54,7 +68,7 @@ export default function ConfigSlideover(props: ConfigSlideoverProps) {
                   leaveFrom="translate-x-0"
                   leaveTo="translate-x-full"
                 >
-                  <Dialog.Panel className="pointer-events-auto w-screen max-w-md">
+                  <Dialog.Panel className="pointer-events-auto w-screen max-w-sm">
                     <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
                       <div className="px-4 sm:px-6">
                         <div className="flex items-start justify-between">
@@ -77,7 +91,7 @@ export default function ConfigSlideover(props: ConfigSlideoverProps) {
                           </div>
                         </div>
                       </div>
-                      <div className="relative mt-6 flex-1 flex-col px-4 sm:px-6 space-y-6">
+                      <div className="relative mt-6 flex-1 flex-col px-4 sm:px-6 space-y-8">
                         <div className="flex space-x-4">
                           <div>
                             <label
@@ -127,8 +141,10 @@ export default function ConfigSlideover(props: ConfigSlideoverProps) {
                             />
                           </div>
                         </div>
-                        <div className="w-3/4">
-                          <ConfigureUnderwriters />
+                        <hr />
+                        <div className="w-full">
+                          <span className="text-sm">Case Sizes</span>
+                          <ConfigureCaseSize onChange={saveCaseSizes} />
                         </div>
                       </div>
                     </div>

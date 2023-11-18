@@ -9,7 +9,8 @@
         sans-serif;
     --ag-header-background-color: theme('colors.slate.100');
     --ag-odd-row-background-color: theme('colors.slate.50'); 
-    --ag-row-hover-color: theme('colors.primary.100')
+    --ag-row-hover-color: theme('colors.primary.100');
+    --ag-border-color: theme('colors.slate.400');
 }
 
 .ag-root-wrapper {

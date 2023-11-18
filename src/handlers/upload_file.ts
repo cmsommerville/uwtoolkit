@@ -6,12 +6,12 @@ import {
 
 export const readExcelData = (
   buffer: ArrayBuffer,
-  sheetName: string,
+  // sheetName: string,
   columns: ColumnMapperInterface[],
   config: ReadExcelDataConfigInterface = {}
 ) => {
   const workbook = xlsxRead(buffer, { type: "buffer" });
-  const worksheet = workbook.Sheets[sheetName];
+  const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
   let i = config.startRow ?? 2;
   const startColumn = config.startColumn ?? "A";
@@ -21,7 +21,15 @@ export const readExcelData = (
   while (worksheet[startColumn + i]) {
     const row: any = {};
     columns.forEach((col) => {
-      row[col.key] = col.parser(worksheet[col.excelColumn + i].w);
+      try {
+        const val = col.parser(worksheet[col.excelColumn + i].w);
+        row[col.key] = val;
+      } catch (err) {
+        if (col.optional) {
+          row[col.key] = undefined;
+        }
+        console.log("Whoops!");
+      }
     });
     rowData.push({ ...row, id: i });
     i++;
@@ -37,6 +45,6 @@ export const parseExcelFile = async (
   const _files = Array.from(files);
   const buffer = await _files[0].arrayBuffer();
 
-  const data = readExcelData(buffer, "Data", column_mapper, config);
+  const data = readExcelData(buffer, column_mapper, config);
   return data;
 };

@@ -124,6 +124,8 @@ const Assignments = () => {
     return toggleAssignments(toggleUWContext, assignments);
   }, [assignments, toggleUWContext]);
 
+  const underwriterType = toggleUWContext ? "underwriter" : "support";
+
   const filteredUnderwriters = useMemo(() => {
     return underwriters.filter(
       (u) => u.type === (toggleUWContext ? "underwriter" : "support")
@@ -332,7 +334,8 @@ const Assignments = () => {
         <div className="col-span-3 space-y-6">
           <CaseDistribution
             assignments={genericAssignments}
-            underwriters={filteredUnderwriters}
+            type={underwriterType}
+            underwriters={underwriters}
           />
         </div>
       </div>

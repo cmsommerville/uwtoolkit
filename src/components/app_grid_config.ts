@@ -5,6 +5,7 @@ export const GRID_COLUMN_TYPES: { [k: string]: ColDef } = {
   date: {
     cellClass: "text-right",
     valueFormatter: (params) => {
+      if (params.value == null) return "";
       return DateTime.fromISO(String(params.value)).toLocaleString(
         DateTime.DATE_SHORT
       );

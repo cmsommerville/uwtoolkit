@@ -3,20 +3,18 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuid } from "uuid";
 import { EligibleMapper } from "../../types/data";
-import {
-  ArrowUpOnSquareIcon,
-  PlusIcon,
-  XCircleIcon,
-} from "@heroicons/react/24/outline";
+import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { db } from "../../store/local_storage";
 import { setCaseSizes, calcRuleAppliedData } from "../../store/slices/data";
 import { KEY_CASE_SIZES } from "../../store/constants";
+import { flushSync } from "react-dom";
 
 interface Props {
   className?: string;
+  onChange: (case_sizes: EligibleMapper[]) => void;
 }
 
-const ConfigureCaseSize = (props: Props) => {
+const ConfigureCaseSize = ({ onChange, ...props }: Props) => {
   const dispatch = useDispatch();
   const case_sizes: EligibleMapper[] = useSelector(
     (state: any) => state.data.case_sizes
@@ -49,58 +47,19 @@ const ConfigureCaseSize = (props: Props) => {
     setIsPristineState(false);
   };
 
-  const lowerUpperHandler = () => {
-    setLocalCaseSizes((prev) => {
-      const n = prev
-        .sort((a, b) => {
-          if (a.lower == null) return 1;
-          if (b.lower == null) return 1;
-          return a.lower < b.lower ? -1 : 1;
-        })
-        .map((row, ix) => {
-          const lower_str = String(row.lower);
-          if (isNaN(parseInt(lower_str))) {
-            return { ...row, lower: null, upper: null, key: "" };
-          }
-          const lower = parseInt(lower_str.replace(/,/g, ""));
-          if (ix === prev.length - 1) {
-            return {
-              ...row,
-              lower,
-              upper: 10000000,
-              key: `${String(lower)}_10000000`,
-            };
-          }
-          // set the current upper to be the next lower
-          const upper_str = String(prev[ix + 1].lower).replace(/,/g, "");
-          const upper = parseInt(upper_str);
-          return {
-            ...row,
-            lower,
-            upper,
-            key: `${String(lower)}_${String(upper)}`,
-          };
-        });
-
-      return n;
-    });
+  const onBlurHandler = () => {
+    const updated_case_sizes = lowerUpperHandler(localCaseSizes);
+    setLocalCaseSizes(updated_case_sizes);
+    onChange(updated_case_sizes);
   };
 
   const deleteHandler = (uuid: string) => {
-    setLocalCaseSizes((prev) => {
-      const new_case_sizes = prev.filter((row) => row.uuid !== uuid);
-      if (new_case_sizes.length === 0)
-        return prev.map((c) => ({ ...c, lower: null, upper: null }));
-      return new_case_sizes;
-    });
-    lowerUpperHandler();
+    const new_case_sizes = lowerUpperHandler(
+      localCaseSizes.filter((row) => row.uuid !== uuid)
+    );
+    setLocalCaseSizes(new_case_sizes);
+    onChange(new_case_sizes);
     setIsPristineState(false);
-  };
-
-  const saveHandler = () => {
-    db.setItem(KEY_CASE_SIZES, localCaseSizes);
-    dispatch(setCaseSizes(localCaseSizes));
-    dispatch(calcRuleAppliedData({ case_sizes: localCaseSizes }));
   };
 
   useEffect(() => {
@@ -113,7 +72,7 @@ const ConfigureCaseSize = (props: Props) => {
 
   return (
     <div className={props.className ?? ""}>
-      <div>
+      <div className="flex flex-col items-start">
         {localCaseSizes && localCaseSizes.length
           ? localCaseSizes.map((u, ix) => {
               return (
@@ -132,7 +91,7 @@ const ConfigureCaseSize = (props: Props) => {
                         onChange={(e) =>
                           changeHandler(ix, "lower", e.target.value)
                         }
-                        onBlur={() => lowerUpperHandler()}
+                        onBlur={onBlurHandler}
                       />
                     </div>
                     <div className="col-span-4 mx-3 flex items-center space-x-2 text-sm">
@@ -142,37 +101,61 @@ const ConfigureCaseSize = (props: Props) => {
                       </span>
                     </div>
                   </div>
-                  <div className="h-6 w-6 flex justify-center items-center ">
-                    <XCircleIcon
-                      className="cursor-pointer hover:text-rose-500 transition duration-100 ease"
-                      onClick={() => deleteHandler(u.uuid)}
-                    />
+                  <div className="flex justify-center items-end space-x-1 text-primary-500">
+                    {ix === localCaseSizes.length - 1 ? (
+                      <button
+                        className="h-5 w-5 rounded-full p-0.5 cursor-pointer bg-primary-500 border border-primary-500 text-white hover:bg-primary-600 hover:border-primary-600 transition duration-100 ease"
+                        onClick={addCaseSize}
+                      >
+                        <PlusIcon className="" />
+                      </button>
+                    ) : null}
+                    <button className="h-5 w-5 rounded-full p-0.5 cursor-pointer bg-transparent border border-slate-500 text-slate-500 hover:text-rose-500 hover:border-rose-500 transition duration-100 ease">
+                      <XMarkIcon onClick={() => deleteHandler(u.uuid)} />
+                    </button>
                   </div>
                 </div>
               );
             })
           : null}
-        <hr className="my-3"></hr>
-        <div className="flex justify-center mt-4 mb-4 space-x-6">
-          <button
-            className="rounded-md py-1 px-2 flex items-center bg-transparent text-primary-600 ring-2 ring-primary-600 hover:ring-primary-500 hover:text-primary-500 hover:bg-primary-500/10 transition ease duration-100"
-            onClick={addCaseSize}
-          >
-            <PlusIcon className="w-5 h-5 mr-1" /> Add
-          </button>
-
-          <button
-            className="rounded-md py-1 px-2 flex items-center bg-primary-500 text-white ring-2 ring-primary-500 hover:ring-primary-600 hover:bg-primary-600 transition ease duration-100"
-            onClick={saveHandler}
-            disabled={isPristineState}
-          >
-            <ArrowUpOnSquareIcon className="w-5 h-5 mr-1" />
-            Save
-          </button>
-        </div>
       </div>
     </div>
   );
+};
+
+const lowerUpperHandler = (case_sizes: EligibleMapper[]) => {
+  const x = case_sizes
+    .sort((a, b) => {
+      if (a.lower == null) return 1;
+      if (b.lower == null) return 1;
+      return a.lower < b.lower ? -1 : 1;
+    })
+    .map((row, ix) => {
+      const lower_str = String(row.lower);
+      if (isNaN(parseInt(lower_str))) {
+        return { ...row, lower: null, upper: null, key: "" };
+      }
+      const lower = parseInt(lower_str.replace(/,/g, ""));
+      if (ix === case_sizes.length - 1) {
+        return {
+          ...row,
+          lower,
+          upper: 10000000,
+          key: `${String(lower)}_10000000`,
+        };
+      }
+      // set the current upper to be the next lower
+      const upper_str = String(case_sizes[ix + 1].lower).replace(/,/g, "");
+      const upper = parseInt(upper_str);
+      return {
+        ...row,
+        lower,
+        upper,
+        key: `${String(lower)}_${String(upper)}`,
+      };
+    });
+  console.log(x);
+  return x;
 };
 
 const formatNumber = (val: number | null | undefined) => {
