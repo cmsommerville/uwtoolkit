@@ -27,7 +27,8 @@ import { KEY_ASSIGNMENTS } from "../../store/constants";
 
 const AssignmentCellRenderer = (params: any) => {
   if (!params.value) return params.valueFormatted;
-  const { assignments } = params.value;
+  const { assignments }: { assignments: Assignment[] } = params.value;
+  const { underwriters }: { underwriters: Underwriter[] } = params.context;
 
   if (!Array.isArray(assignments)) return params.valueFormatted;
   if (assignments.length === 0) return params.valueFormatted;
@@ -35,12 +36,13 @@ const AssignmentCellRenderer = (params: any) => {
     return (
       <>
         {assignments.map((a) => {
+          const uw = underwriters.find((u) => u.uuid === a.uuid);
           return (
             <span
-              key={a.underwriter.uuid}
+              key={a.uuid}
               style={{
                 borderLeft: `${10 / assignments.length}px`,
-                borderColor: a.underwriter.color,
+                borderColor: uw ? uw.color : "#ddd",
                 borderStyle: "solid",
               }}
             ></span>
@@ -56,11 +58,12 @@ const AssignmentCellRenderer = (params: any) => {
       </>
     );
 
+  const uw = underwriters.find((u) => u.uuid === assignments[0].uuid);
   return (
     <span
       style={{
         borderLeft: "10px",
-        borderColor: assignments[0].underwriter.color,
+        borderColor: uw ? uw.color : "#ddd",
         borderStyle: "solid",
         paddingLeft: "8px",
       }}
@@ -81,7 +84,10 @@ const toggleAssignments = (
   showUnderwriters: boolean,
   assignments: AssignmentsGridInterface[]
 ): GenericAssignmentsGridInterface[] => {
-  return assignments.map((a) => {
+  const a = assignments;
+
+  // console.log(a);
+  return a.map((a) => {
     const filtered_a = Object.fromEntries(
       Object.entries(a).map(([key, val]) => {
         if (key === "group") return [key, val];
@@ -135,7 +141,7 @@ const Assignments = () => {
   const underwritersWithMultiple = useMemo(() => {
     return [
       ...filteredUnderwriters,
-      { name: "Multiple", color: "#f00", uuid: "" },
+      { name: "Multiple", color: "#f00", uuid: "", type: "" },
     ];
   }, [filteredUnderwriters]);
 
@@ -151,8 +157,8 @@ const Assignments = () => {
         return valueFormatter_AssignmentCell(params, true);
       },
       comparator: (a: any, b: any) => {
-        const val_a = formatter(a);
-        const val_b = formatter(b);
+        const val_a = formatter(a, underwritersWithMultiple);
+        const val_b = formatter(b, underwritersWithMultiple);
 
         if (val_a == null) return 1;
         if (val_b == null) return 1;
@@ -179,8 +185,9 @@ const Assignments = () => {
           });
           return false;
         } else if (params.newValue) {
-          assignment = [{ underwriter: params.newValue, allocation_pct: 1 }];
+          assignment = [{ uuid: params.newValue.uuid, allocation_pct: 1 }];
         }
+
         dispatch(
           updateAssignment({ group, column, assignment, assignment_type })
         );
@@ -314,9 +321,6 @@ const Assignments = () => {
             onGridReady={(params) => {
               setGridApi(params.api);
             }}
-            onFirstDataRendered={(params) => {
-              params.columnApi.autoSizeAllColumns();
-            }}
             gridOptions={{
               copyHeadersToClipboard: false,
               singleClickEdit: true,
@@ -326,6 +330,7 @@ const Assignments = () => {
               setIsPristineState,
               setMultAssignmentContext,
               toggleUWContext,
+              underwriters,
             }}
             columnDefs={ASSIGNMENT_COLUMN_DEFS}
             animateRows={true}
@@ -351,7 +356,7 @@ const headerNameHandler = (case_size: EligibleMapper) => {
   return `${case_size.lower} - ${case_size.upper - 1}`;
 };
 
-const formatter = (val: any) => {
+const formatter = (val: any, underwriters: Underwriter[]) => {
   if (!val) return null;
   const { assignments } = val;
   if (!assignments) {
@@ -362,9 +367,11 @@ const formatter = (val: any) => {
 
   return assignments
     .map((assignment: Assignment) => {
-      return `${assignment.underwriter.name} (${(
-        assignment.allocation_pct * 100
-      ).toFixed(0)}%)`;
+      const uw = underwriters.find((u) => u.uuid === assignment.uuid);
+
+      return `${uw ? uw.name : ""} (${(assignment.allocation_pct * 100).toFixed(
+        0
+      )}%)`;
     })
     .join(" / ");
 };
@@ -381,14 +388,16 @@ const valueFormatter_AssignmentCell = (
   if (!Array.isArray(assignments)) return "-";
   if (assignments.length === 0) return "-";
 
+  const underwriters: Underwriter[] = params.context.underwriters;
+
   return assignments
     .map((assignment: Assignment) => {
+      const uw = underwriters.find((u) => u.uuid === assignment.uuid);
+      if (!uw) return "";
       if (showPercent)
-        return `${assignment.underwriter.name} (${(
-          assignment.allocation_pct * 100
-        ).toFixed(0)}%)`;
+        return `${uw.name} (${(assignment.allocation_pct * 100).toFixed(0)}%)`;
 
-      return assignment.underwriter.name;
+      return uw.name;
     })
     .join(" / ");
 };

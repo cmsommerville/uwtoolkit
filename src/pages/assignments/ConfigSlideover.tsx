@@ -3,7 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 import { Cog6ToothIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import ConfigureCaseSize from "../config/ConfigureCaseSize";
+import ConfigureCaseSize from "./ConfigureCaseSize";
 import { db } from "../../store/local_storage";
 import { setCaseSizes, calcRuleAppliedData } from "../../store/slices/data";
 import { KEY_CASE_SIZES } from "../../store/constants";
@@ -92,7 +92,7 @@ export default function ConfigSlideover(props: ConfigSlideoverProps) {
                         </div>
                       </div>
                       <div className="relative mt-6 flex-1 flex-col px-4 sm:px-6 space-y-8">
-                        <div className="flex space-x-4">
+                        {/* <div className="flex space-x-4">
                           <div>
                             <label
                               htmlFor="min-dt"
@@ -141,10 +141,13 @@ export default function ConfigSlideover(props: ConfigSlideoverProps) {
                             />
                           </div>
                         </div>
-                        <hr />
-                        <div className="w-full">
+                        <hr /> */}
+                        <div className="w-3/4">
                           <span className="text-sm">Case Sizes</span>
-                          <ConfigureCaseSize onChange={saveCaseSizes} />
+                          <ConfigureCaseSize
+                            className="w-full"
+                            onChange={saveCaseSizes}
+                          />
                         </div>
                       </div>
                     </div>

@@ -7,7 +7,7 @@ import "primereact/resources/themes/soho-light/theme.css";
 const navigation = [
   { name: "Home", href: "/" },
   { name: "Data", href: "/quotes" },
-  { name: "Configure", href: "/config" },
+  { name: "Brokers", href: "/config" },
 ];
 
 export default function AppHeader() {

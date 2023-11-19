@@ -90,21 +90,6 @@ const RulesetList = () => {
           <PlusIcon className="" />
         </button>
       )}
-      <div className="mb-8 space-y-1">
-        <h3 className="text-slate-600">
-          Click the add button below to add a new Premier broker ruleset!
-        </h3>
-
-        <p className="text-slate-400 text-sm">
-          For each row, you can add complex rules or keep it simple. For
-          example, you might want to create a rule called "Captives" that has
-          brokers equal to "BeneRe" and the Captive indicator equal to "Y".
-        </p>
-        <p className="text-slate-400 text-sm">
-          If more than one ruleset can apply to a quote, the first will be
-          applied. Reorder the rules by dragging by their handles.
-        </p>
-      </div>
       <DragDropContext onDragEnd={reorderRuleset}>
         <Droppable droppableId="ruleset-list">
           {(provided) => {

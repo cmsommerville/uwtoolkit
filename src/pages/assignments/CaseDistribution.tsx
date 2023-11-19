@@ -5,9 +5,10 @@ import AppGrid from "../../components/AppGrid";
 import { GenericAssignmentsGridInterface, Underwriter } from "../../types/data";
 import { ColDef } from "ag-grid-community";
 import { CheckIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { setUnderwriters } from "../../store/slices/data";
+import { calcRuleAppliedData, setUnderwriters } from "../../store/slices/data";
 import { db } from "../../store/local_storage";
 import { KEY_UNDERWRITERS } from "../../store/constants";
+import "./CaseDistribution.css";
 
 interface Props {
   assignments: GenericAssignmentsGridInterface[];
@@ -42,8 +43,9 @@ const countByUnderwriter = (
       }
       // loop over the assignments and multiply count by percent split
       assignment_cell.assignments.forEach((assignment) => {
-        underwriter_counts[assignment.underwriter.name] +=
-          assignment.allocation_pct * count;
+        const uw = underwriters.find((u) => u.uuid === assignment.uuid);
+        if (!uw) return;
+        underwriter_counts[uw.name] += assignment.allocation_pct * count;
       });
     });
   });
@@ -153,6 +155,7 @@ const AddUnderwriter = ({
 };
 
 const CaseDistribution = ({ assignments, underwriters, type }: Props) => {
+  const dispatch = useDispatch();
   const [newUw, setNewUW] = useState<Underwriter>();
 
   const filteredUnderwriters = useMemo(() => {
@@ -207,7 +210,10 @@ const CaseDistribution = ({ assignments, underwriters, type }: Props) => {
         <div className="absolute bottom-0 w-full p-2 bg-primary-50 rounded-b border border-t-0 border-slate-400 overflow-hidden">
           <AddUnderwriter
             type={type}
-            onClose={() => setNewUW(undefined)}
+            onClose={() => {
+              dispatch(calcRuleAppliedData({}));
+              setNewUW(undefined);
+            }}
             uw={newUw}
             underwriters={underwriters}
           />

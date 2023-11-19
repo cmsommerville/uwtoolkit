@@ -24,7 +24,8 @@ export interface QuoteDataInterface {
 }
 
 export interface Assignment {
-  underwriter: Underwriter;
+  // underwriter: Underwriter;
+  uuid: string;
   allocation_pct: number;
 }
 

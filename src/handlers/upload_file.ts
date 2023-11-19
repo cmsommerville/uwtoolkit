@@ -25,10 +25,7 @@ export const readExcelData = (
         const val = col.parser(worksheet[col.excelColumn + i].w);
         row[col.key] = val;
       } catch (err) {
-        if (col.optional) {
-          row[col.key] = undefined;
-        }
-        console.log("Whoops!");
+        row[col.key] = undefined;
       }
     });
     rowData.push({ ...row, id: i });

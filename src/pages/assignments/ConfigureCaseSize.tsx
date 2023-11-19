@@ -1,13 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { v4 as uuid } from "uuid";
 import { EligibleMapper } from "../../types/data";
 import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { db } from "../../store/local_storage";
-import { setCaseSizes, calcRuleAppliedData } from "../../store/slices/data";
-import { KEY_CASE_SIZES } from "../../store/constants";
-import { flushSync } from "react-dom";
 
 interface Props {
   className?: string;
@@ -15,18 +11,15 @@ interface Props {
 }
 
 const ConfigureCaseSize = ({ onChange, ...props }: Props) => {
-  const dispatch = useDispatch();
   const case_sizes: EligibleMapper[] = useSelector(
     (state: any) => state.data.case_sizes
   );
   const [localCaseSizes, setLocalCaseSizes] = useState<EligibleMapper[]>([]);
-  const [isPristineState, setIsPristineState] = useState(true);
 
   const addCaseSize = () => {
     setLocalCaseSizes((prev) => {
       return [...prev, { uuid: uuid(), key: "", lower: null, upper: null }];
     });
-    setIsPristineState(false);
   };
 
   const changeHandler = (
@@ -44,7 +37,6 @@ const ConfigureCaseSize = ({ onChange, ...props }: Props) => {
         ...prev.slice(ix + 1, prev.length + 1),
       ];
     });
-    setIsPristineState(false);
   };
 
   const onBlurHandler = () => {
@@ -59,7 +51,6 @@ const ConfigureCaseSize = ({ onChange, ...props }: Props) => {
     );
     setLocalCaseSizes(new_case_sizes);
     onChange(new_case_sizes);
-    setIsPristineState(false);
   };
 
   useEffect(() => {
@@ -78,7 +69,7 @@ const ConfigureCaseSize = ({ onChange, ...props }: Props) => {
               return (
                 <div
                   key={u.uuid}
-                  className="flex items-center justify-between space-x-2"
+                  className="w-full flex items-center justify-between space-x-2"
                 >
                   <div className="grid grid-cols-7 my-1 relative w-5/6">
                     <div className="col-span-3">

@@ -119,18 +119,18 @@ const dataSlice = createSlice({
         [column]: { ...updateRow[column], [assignment_type]: assignment },
       } as AssignmentsGridInterface;
 
+      const a = [
+        ...state.assignments.filter((row) => row.group !== group),
+        updateRow,
+      ].sort((a, b) => {
+        if (a.group == null) return 1;
+        if (b.group == null) return 1;
+        if (a.group === "Non-Premier Broker") return 1;
+        return a.group < b.group ? -1 : 1;
+      });
       state = {
         ...state,
-        assignments: [
-          ...state.assignments.filter((row) => row.group !== group),
-          updateRow,
-        ].sort((a, b) => {
-          if (a.group == null) return 1;
-          if (b.group == null) return 1;
-          if (a.group === "Non-Premier Broker") return 1;
-          if (b.group === "Non-Premier Broker") return 1;
-          return a.group < b.group ? -1 : 1;
-        }),
+        assignments: a,
       };
       return state;
     },
@@ -266,7 +266,7 @@ const aggregateRuleAppliedData = (
       if (a.group == null) return 1;
       if (b.group == null) return 1;
       if (a.group === "Non-Premier Broker") return 1;
-      if (b.group === "Non-Premier Broker") return 1;
+      // if (b.group === "Non-Premier Broker") return 1;
       return a.group < b.group ? -1 : 1;
     }) as AssignmentsGridInterface[];
 };

@@ -162,7 +162,7 @@ const LoadIndexedDBProvider = (props: Props) => {
         navigate("/quotes");
         return;
       }
-    }, 1500);
+    }, 3000);
 
     return () => {
       clearTimeout(timeout);

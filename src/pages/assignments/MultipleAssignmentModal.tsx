@@ -93,9 +93,7 @@ const MultipleAssignmentModal = (props: Props) => {
             return a.name < b.name ? -1 : 1;
           })
           .map((u) => {
-            const a = props.assignments.find(
-              (row) => row.underwriter.name === u.name
-            );
+            const a = props.assignments.find((row) => row.uuid === u.uuid);
             return [u.name, a ? a.allocation_pct * 100 : 0];
           })
       )
@@ -168,7 +166,7 @@ const formatAssignments = (
   return Object.entries(a)
     .map(([name, pct]) => {
       const uw = underwriters.find((u) => u.name === name) as Underwriter;
-      return { underwriter: uw, allocation_pct: Number(pct) * 0.01 };
+      return { uuid: uw.uuid, allocation_pct: Number(pct) * 0.01 };
     })
     .filter((row) => row.allocation_pct > 0);
 };
