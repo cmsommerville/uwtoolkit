@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
 import { Switch } from "@headlessui/react";
-// import "ag-grid-enterprise";
 import AppGrid from "../../components/AppGrid";
 import AppPanel from "../../components/AppPanel";
 import MultipleAssignmentModal from "./MultipleAssignmentModal";
@@ -23,7 +22,7 @@ import {
   GenericAssignmentsGridInterface,
   Underwriter,
 } from "../../types/data";
-import { KEY_ASSIGNMENTS } from "../../store/constants";
+import { KEY_ASSIGNMENTS, KEY_CASE_SIZES } from "../../store/constants";
 
 const AssignmentCellRenderer = (params: any) => {
   if (!params.value) return params.valueFormatted;
@@ -121,6 +120,7 @@ const Assignments = () => {
       assignments: [],
       assignment_type: undefined,
     });
+  const [showSlideoverOnLoad, setShowSlideoverOnLoad] = useState(false);
   const [isPristineState, setIsPristineState] = useState(true);
   const [toggleUWContext, setToggleUWContext] = useState(true);
 
@@ -249,6 +249,14 @@ const Assignments = () => {
   };
 
   useEffect(() => {
+    const getter = async () => {
+      const db_case_sizes = await db.getItem(KEY_CASE_SIZES);
+      setShowSlideoverOnLoad(!db_case_sizes);
+    };
+    getter();
+  }, []);
+
+  useEffect(() => {
     if (!gridApi) return;
     if (!genericAssignments) return;
     gridApi.setRowData(genericAssignments);
@@ -305,7 +313,10 @@ const Assignments = () => {
           </div>
         </div>
         <div className="col-span-3 flex justify-between space-x-6 items-center">
-          <ConfigSlideover className="z-10 right-0 top-0 text-slate-400 w-6 h-6" />
+          <ConfigSlideover
+            className="z-10 right-0 top-0 text-slate-400 w-6 h-6"
+            open={showSlideoverOnLoad ?? undefined}
+          />
           <button
             className="flex items-center py-1.5 px-2 rounded bg-primary-500 ring-2 ring-primary-500 text-white hover:bg-primary-700 hover:ring-primary-700 disabled:bg-slate-500 disabled:ring-slate-500 transition duration-100 shadow"
             onClick={saveToIndexedDB}

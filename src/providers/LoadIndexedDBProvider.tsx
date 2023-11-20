@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AnyAction, Dispatch } from "@reduxjs/toolkit";
 import { useNavigate } from "react-router-dom";
 import { db } from "../store/local_storage";
-import ResumeOrRestart from "../components/ResumeOrRestart";
+// import ResumeOrRestart from "../components/ResumeOrRestart";
 
 import { parseExcelFile } from "../handlers/upload_file";
 import { CASE_DATA_COLUMN_MAPPER } from "../config";
@@ -172,9 +172,9 @@ const LoadIndexedDBProvider = (props: Props) => {
   return (
     <>
       {props.children}
-      {initialStatus === "PARTIALLY_CONFIGURED" ? (
+      {/* {initialStatus === "PARTIALLY_CONFIGURED" ? (
         <ResumeOrRestart resumePath={resumePath} />
-      ) : null}
+      ) : null} */}
     </>
   );
 };

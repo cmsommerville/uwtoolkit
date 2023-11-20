@@ -11,6 +11,7 @@ import { EligibleMapper } from "../../types/data";
 
 interface ConfigSlideoverProps {
   className?: string;
+  open?: boolean | null | undefined;
 }
 
 export default function ConfigSlideover(props: ConfigSlideoverProps) {
@@ -45,6 +46,12 @@ export default function ConfigSlideover(props: ConfigSlideoverProps) {
     setLocalMinDate(min_dt);
     setLocalMaxDate(max_dt);
   }, [quotes, open]);
+
+  useEffect(() => {
+    if (props.open != null) {
+      setOpen(props.open);
+    }
+  }, [props.open]);
 
   return (
     <>
